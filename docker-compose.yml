@@ -3,6 +3,8 @@ version: '3.8'
 services:
   backend:
     image: pedrobachaalani1701/trabalho-backend:6.0
+    ports:
+      - "3001:3001"
     networks:
       - app-net
     deploy:
