@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    # Substitua 'SEU_USUARIO_DOCKERHUB' pelo seu nome de usuário
+    image: pedrobachaalani1701/trabalho-backend:6.0
+    ports:
+      - "3001:3001"
+    # Adicionando uma política de reinicialização padrão do Compose
+    restart: unless-stopped
+
+  frontend:
+    # Substitua 'SEU_USUARIO_DOCKERHUB' pelo seu nome de usuário
+    image: pedrobachaalani1701/trabalho-frontend:3.0
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+# A seção 'networks' pode ser omitida. O Docker Compose criará
+# uma rede bridge padrão para conectar os serviços.

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de usuários - cadastrados</title>
+  <style>
+    body { font-family: sans-serif; background-color: #282a36; color: #f8f8f2; text-align: center; padding-top: 50px; }
+    h1 { color: #50fa7b; }
+    button { background-color: #bd93f9; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button:hover { background-color: #9580ff; }
+    #data-container { background-color: #44475a; margin: 30px auto; padding: 20px; border-radius: 8px; max-width: 600px; text-align: left; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .loading { color: #ffb86c; }
+    .error { color: #ff5555; }
+    .success { color: #50fa7b; }
+  </style>
+</head>
+<body>
+  <h1>Aplicação Distribuída com Docker Swarm</h1>
+  <p>Clique no botão para buscar dados dos usuários no backend.</p>
+  <button id="fetch-btn">Buscar Dados</button>
+  <div id="data-container" style="display:none;">
+    <h2>Dados Recebidos do Backend:</h2>
+    <pre id="data-pre"></pre>
+  </div>
+  <script>
+    document.getElementById('fetch-btn').addEventListener('click', async () => {
+      const dataContainer = document.getElementById('data-container');
+      const dataPre = document.getElementById('data-pre');
+      const fetchBtn = document.getElementById('fetch-btn');
+      
+      // Desabilita o botão durante a requisição
+      fetchBtn.disabled = true;
+      fetchBtn.textContent = 'Carregando...';
+      
+      // Corrigido: usando a porta 3001 que está mapeada no docker-compose
+      const apiURL = `${window.location.protocol}//${window.location.hostname}:3001/data`;
+      
+      try {
+        dataPre.textContent = 'Buscando dados...';
+        dataPre.className = 'loading';
+        dataContainer.style.display = 'block';
+        
+        const response = await fetch(apiURL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
+        });
+        
+        if (!response.ok) { 
+          throw new Error(`Erro na rede: ${response.status} - ${response.statusText}`); 
+        }
+        
+        const data = await response.json();
+        dataPre.textContent = JSON.stringify(data, null, 2);
+        dataPre.className = 'success';
+        
+      } catch (error) {
+        console.error('Erro detalhado:', error);
+        dataPre.textContent = `Falha ao buscar dados: ${error.message}\n\nURL tentada: ${apiURL}`;
+        dataPre.className = 'error';
+        dataContainer.style.display = 'block';
+      } finally {
+        // Reabilita o botão
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = 'Buscar Dados';
+      }
+    });
+  </script>
+</body>
+</html>
