@@ -2,33 +2,19 @@ version: '3.8'
 
 services:
   backend:
+    # Substitua 'SEU_USUARIO_DOCKERHUB' pelo seu nome de usuário
     image: pedrobachaalani1701/trabalho-backend:6.0
-    networks:
-      - app-net
-    deploy:
-      replicas: 3 # Define o número de réplicas (contêineres) para o backend
-      restart_policy:
-        condition: on-failure # Reinicia o contêiner em caso de falha
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: stop-first
+    ports:
+      - "3001:3001"
+    # Adicionando uma política de reinicialização padrão do Compose
+    restart: unless-stopped
 
   frontend:
+    # Substitua 'SEU_USUARIO_DOCKERHUB' pelo seu nome de usuário
     image: pedrobachaalani1701/trabalho-frontend:3.0
     ports:
       - "8080:80"
-    networks:
-      - app-net
-    deploy:
-      replicas: 3 # Define o número de réplicas para o frontend
-      restart_policy:
-        condition: on-failure
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: stop-first
+    restart: unless-stopped
 
-networks:
-  app-net:
-    driver: overlay # Define a rede como do tipo 'overlay' para comunicação multi-nó
+# A seção 'networks' pode ser omitida. O Docker Compose criará
+# uma rede bridge padrão para conectar os serviços.
